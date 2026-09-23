@@ -67,6 +67,25 @@ namespace SimuladoOficina.Api.Controllers
                 .ToList()
         })
         .ToListAsync();
+
+            return Ok(clientes);
+        }
+
+        [HttpDelete("DeletarCliente")]
+        [Authorize (Roles = "admin,cliente")]
+        public async Task<IActionResult> DeleteCliente(int id)
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+
+            if(cliente == null)
+            {
+                return NotFound(new { Mensagem = "Cliente não emcontrado" });
+            }
+
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Mensagem = "Cliente deletado com sucesso" });
         }
     }
 }

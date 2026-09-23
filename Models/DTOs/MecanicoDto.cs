@@ -4,7 +4,7 @@
     {
         public string NomeMecanico { get; set; }
         public string EspecialidadeMecanico { get; set; }
-        public string EmailEmail { get; set; }
+        public string EmailMecanico { get; set; }
 
         public List<AgendamentoSimplesDto>? Agendamentos { get; set; }
     }

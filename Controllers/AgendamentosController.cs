@@ -41,7 +41,7 @@ namespace SimuladoOficina.Api.Controllers
                 Especialidade = dto.Especialidade,
 
                 VeiculoId = dto.VeiculoId,
-                ClienteId = dto.ClienteId,
+                ClienteId = veiculo.ClienteId,
                 MecanicoId = dto.MecanicoId
             };
 
@@ -92,7 +92,7 @@ namespace SimuladoOficina.Api.Controllers
             _context.Agendamentos.Remove(agenda);
             await _context.SaveChangesAsync();
                 
-            return Ok();
+            return Ok(new { Mensagem = "Agendamento deletado com sucesso" });
         }
     }
 }
