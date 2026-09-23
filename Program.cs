@@ -7,12 +7,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
-//Adicionar CORS
+
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -23,7 +24,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-//Adicionar Autenticação JWT Bearer
+
+// AUTENTICAÇÃO JWT
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -33,59 +35,62 @@ builder.Services
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey =
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("minhachaveSecretaSenai927M@rilia2026")
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    "minhachaveSecretaSenai927M@rilia2026"
                 )
+            )
         };
     });
 
+
+// SWAGGER
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme \r\n\r\n Exemplo: Bearer 12345abcdef",
+        Description = "JWT Authorization header using the Bearer scheme. Exemplo: Bearer {token}"
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                          new OpenApiSecurityScheme
-                          {
-                              Reference = new OpenApiReference
-                              {
-                                  Type = ReferenceType.SecurityScheme,
-                                  Id = "Bearer"
-                              }
-                          },
-                         new string[] {}
-                    }
-                });
-});
 
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// CORREÇÃO 3: Apaguei o AddSwaggerGen() duplicado que ficava aqui!
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// SWAGGER
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// CORREÇÃO 1: Adicionado o UseAuthentication (Deve vir SEMPRE ANTES do Authorization)
-app.UseAuthentication();
 
+// PIPELINE
 app.UseCors("AllowAll");
 
 app.UseAuthentication();

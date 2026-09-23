@@ -65,7 +65,7 @@ namespace SimuladoOficina.Api.Controllers
             var claims = new List<Claim>
             {
                 new Claim("nome", usuario.Nome),
-                new Claim("Role", usuario.Role)
+                new Claim(ClaimTypes.Role, usuario.Role)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("minhachaveSecretaSenai927M@rilia2026"));

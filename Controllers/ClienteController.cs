@@ -20,7 +20,7 @@ namespace SimuladoOficina.Api.Controllers
         }
 
         [HttpPost("CriarCliente")]
-        [Authorize (Roles = "admim,cliente")]
+        [Authorize (Roles = "admin,cliente")]
         public async Task<IActionResult> CreateCliente([FromBody] CriarClienteDto dto)
         {
             var novoCliente = new Cliente
@@ -62,7 +62,8 @@ namespace SimuladoOficina.Api.Controllers
                 {
                     Marca = v.Marca,
                     Modelo = v.Modelo,
-                    Placa = v.Placa
+                    Placa = v.Placa,
+                    AnoFabricacao = v.AnoFabricacao
                 })
                 .ToList()
         })

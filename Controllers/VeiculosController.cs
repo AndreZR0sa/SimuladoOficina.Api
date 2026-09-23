@@ -20,14 +20,15 @@ namespace SimuladoOficina.Api.Controllers
         }
 
         [HttpPost("CriarVeiculo")]
-        [Authorize (Roles = "admin,cliente")]
+        [Authorize(Roles = "admin,cliente")]
         public async Task<IActionResult> CreateVeiculo([FromBody] CriarVeiculoDto dto)
         {
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(c => c.Id == dto.ClienteId);
+            var cliente = await _context.Clientes.FindAsync(dto.ClienteId);
 
             if (cliente == null)
+            {
                 return NotFound("Cliente não encontrado.");
+            }
 
             var novoVeiculo = new Veiculo
             {
@@ -36,7 +37,6 @@ namespace SimuladoOficina.Api.Controllers
                 Placa = dto.Placa,
                 AnoFabricacao = dto.AnoFabricacao,
                 Problema = dto.Problema,
-
                 ClienteId = dto.ClienteId
             };
 
@@ -44,7 +44,44 @@ namespace SimuladoOficina.Api.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { Mensagem = "Veiculo criado com sucesso" });
+            return Ok(new
+            {
+                Mensagem = "Veículo criado com sucesso"
+            });
+        }
+
+        [HttpGet("VerificarVeiculo")]
+        [AllowAnonymous]
+        public async Task<ActionResult<VeiculoDto>> GetVeiculo()
+        {
+            var veiculos = await _context.Veiculos.Include(v => v.Cliente).Select(v => new VeiculoDto
+            {
+                Marca = v.Marca,
+                Modelo = v.Modelo,
+                Placa = v.Placa,
+                AnoFabricacao = v.AnoFabricacao,
+
+                NomeCliente = v.Cliente.Nome
+            }).ToListAsync();
+
+            return Ok(veiculos);
+        }
+
+        [HttpDelete("DeletarVeiculo")]
+        [Authorize (Roles = "admin")]
+        public async Task<IActionResult> DeleteVeiculo(int id)
+        {
+            var veiculo = await _context.Veiculos.FindAsync(id);
+
+            if(veiculo == null)
+            {
+                return NotFound(new { Mensagem = "Veiculo não encontrado" });
+            }
+
+            _context.Veiculos.Remove(veiculo);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Mensagem = "Veiculo deleta com sucesso" });
         }
     }
 }

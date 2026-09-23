@@ -8,7 +8,6 @@
         public int AnoFabricacao { get; set; }
         public string Problema { get; set; }
 
-        public Cliente? cliente { get; set; }
         public int ClienteId { get; set; }
     }
 }

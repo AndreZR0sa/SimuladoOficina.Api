@@ -21,19 +21,22 @@ namespace SimuladoOficina.Api.Controllers
 
         [HttpPost("CriarAgendamento")]
         [Authorize(Roles = "admin,mecanico,cliente")]
-        public async Task<IActionResult> CreateAgendamento([FromBody] CriarAgendamentoDto dto)
+        public async Task<IActionResult> CreateAgendamento(
+    [FromBody] CriarAgendamentoDto dto)
         {
-            var veiculo = await _context.Veiculos
-                .FirstOrDefaultAsync(v => v.Id == dto.VeiculoId);
+            var veiculo = await _context.Veiculos.FindAsync(dto.VeiculoId);
 
             if (veiculo == null)
+            {
                 return NotFound("Veículo não encontrado.");
+            }
 
-            var mecanico = await _context.Mecanicos
-                .FirstOrDefaultAsync(m => m.Id == dto.MecanicoId);
+            var mecanico = await _context.Mecanicos.FindAsync(dto.MecanicoId);
 
             if (mecanico == null)
+            {
                 return NotFound("Mecânico não encontrado.");
+            }
 
             var novoAgendamento = new Agendamento
             {
@@ -41,7 +44,10 @@ namespace SimuladoOficina.Api.Controllers
                 Especialidade = dto.Especialidade,
 
                 VeiculoId = dto.VeiculoId,
+
+                // O cliente é descoberto automaticamente pelo veículo
                 ClienteId = veiculo.ClienteId,
+
                 MecanicoId = dto.MecanicoId
             };
 
@@ -49,7 +55,10 @@ namespace SimuladoOficina.Api.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { Mensagem = "Agendamento criado com sucesso" });
+            return Ok(new
+            {
+                Mensagem = "Agendamento criado com sucesso"
+            });
         }
 
         [HttpGet("VerificarAgendamento")]
