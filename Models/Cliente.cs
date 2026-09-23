@@ -9,8 +9,8 @@
         public string Email { get; set; }
         public DateTime DataNascimento { get; set; }
 
-        public List<Veiculo>? veiculos { get; set; }
+        public List<Veiculo>? Veiculos { get; set; }
 
-        public List<Agendamento>? agendamentos { get; set; }
+        public List<Agendamento>? Agendamentos { get; set; }
     }
 }
